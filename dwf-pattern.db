@@ -1,0 +1,59 @@
+<patterndb version='4' pub_date='2016-01-15'>
+########################################################################
+#
+#  SYSLOG-NG pattern database for DFW log entries
+#  Parse DFW log entries into MACROs so can be used
+#  to output formatted logs
+#
+#  Example:
+#      2015-09-02T11:05:16.361Z NSXDOMAINNAME.comp.com NSXLOG: INET match PASS domain-c33046/1205 IN 40 TCP 1.1.1.1/51086->2.2.2.2/80 RA
+#       action:         PASS or DROP
+#       domain:         domain-cxxxxxxx
+#       direction:      IN or OUT
+#       size:           some number
+#       protocol:       TCP/UDP/PROTO
+#       size:           some number
+#       srcip:          source IP address
+#       srcport:        source port
+#       dstip:          destip
+#       dstport:        destport
+#       flags:          TCP flags
+#
+########################################################################
+
+  <ruleset name='patternize' id='56189814-0dbe-a940-ad8a-75af20bec646'>
+    <rules>
+
+##########      Filter ICMP     ############
+
+      <rule id='7e59a958-42f0-5046-ab96-3bee494340b4' class='ICMP' provider='patternize'>
+        <!-- support: 2 -->
+        <patterns>
+                <pattern>INET match @STRING:action:@ @ESTRING:domain: @@STRING:direction:@ @NUMBER:size:@ @STRING:protocol:@ @NUMBER:size:@ @IPv4:srcip:@@ESTRING:arrowjunk:>@@IPv4:dstip:@</pattern>
+        </patterns>
+      </rule>
+
+
+##########      Filter TCP/UDP w/ NO FLAGS at end ############
+
+      <rule id='29fa495b-6ba2-5c42-b75b-b7c4806d45de' class='TCPUDP' provider='patternize'>
+        <!-- support: 3812 -->
+        <patterns>
+                <pattern>INET match @STRING:action:@ @ESTRING:domain: @@STRING:direction:@ @NUMBER:size:@ @STRING:protocol:@ @IPv4:srcip:@/@NUMBER:srcport:@@ESTRING:arrowjunk:>@@IPv4:dstip:@/@NUMBER:dstport:@</pattern>
+        </patterns>
+      </rule>
+
+##########      Filter TCP/UDP w/ FLAGS at end ############
+
+
+      <rule id='29fa495b-6ba2-5c42-b75b-b7c4806d4453' class='TCPUDP' provider='patternize'>
+        <!-- support: 3812 -->
+        <patterns>
+                <pattern>INET match @STRING:action:@ @ESTRING:domain: @@STRING:direction:@ @NUMBER:size:@ @STRING:protocol:@ @IPv4:srcip:@/@NUMBER:srcport:@@ESTRING:arrowjunk:>@@IPv4:dstip:@/@NUMBER:dstport:@ @ESTRING:flags:@</pattern>
+        </patterns>
+      </rule>
+
+
+    </rules>
+  </ruleset>
+</patterndb>
